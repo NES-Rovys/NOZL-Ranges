@@ -2,16 +2,21 @@ var table = document.getElementById("table-body");
 var weapons = [];
 var points = [];
 var level = [];
+var kraken = [];
+var hidden = [];
 var maxPoints = [];
 var max;
 var current = 0;
 var remaining = 3;
 var background;
+var ban = false;
 function loadValues() {
     for (i=0; i<table.rows.length; i++) {
         weapons[i] = table.rows[i].cells[0].innerHTML;
         points[i] = table.rows[i].cells[1].innerHTML;
         level[i] = 1;
+        kraken[i] = table.rows[i].cells[5].innerHTML;
+        hidden[i] = false;
     }
     maxPoints[0] = table.rows[1].cells[8].innerHTML;
     maxPoints[1] = table.rows[2].cells[8].innerHTML;
@@ -21,8 +26,23 @@ function loadValues() {
 }
 
 function createTables() {
+    search = document.getElementById("searchWeapon").value;
     var check = 0;
-    table = document.getElementById("comp")
+    if (search != "Search") {
+        for (i=0; i<weapons.length; i++) {
+            if (weapons[i].toLowerCase().includes(search.toLowerCase())) {
+                hidden[i] = false;
+            } else {
+                hidden[i] = true;
+            }
+        }
+    } else  {
+        for (i=0; i<weapons.length; i++) {
+            hidden[i] = false;
+        }
+    }
+
+    table = document.getElementById("comp");
     table.innerHTML = "<thead> <tr style='background-color:#34a853; font-size=20px'> <th></th> <th>Weapons</th> <th>Points</th> </tr> </thead> <tbody id='table-body'>";
     for (i=0; i<weapons.length; i++) {
         if (level[i] == 0) {
@@ -41,7 +61,7 @@ function createTables() {
     table = document.getElementById("table-body")
     table.innerHTML = "<thead> <tr style='background-color:#34a853; font-size=20px'> <th></th> <th>Weapons</th> <th>Points</th> </tr> </thead> <tbody id='table-body'>";
     for (i=0; i<weapons.length; i++) {
-        if (level[i] == 1) {
+        if (level[i] == 1 && hidden[i] == false) {
             if (check % 2 == 0) {
                 background = 1;
             } else {
@@ -57,7 +77,7 @@ function createTables() {
     table = document.getElementById("full")
     table.innerHTML = "<thead> <tr style='background-color:color-mix(in srgb,#34a853, black 50%); font-size=20px'> <th></th> <th>Weapons</th> <th>Points</th> </tr> </thead> <tbody id='table-body'>";
     for (i=0; i<weapons.length; i++) {
-        if (level[i] == 2) {
+        if (level[i] == 2 && hidden[i] == false) {
             if (check % 2 == 0) {
                 background = 3;
             } else {
@@ -75,6 +95,9 @@ function toComp(id) {
     level[id] = 0;
     current += Number(points[id]);
     remaining--;
+    if (kraken[id] == "+1") {
+        ban = true;
+    }
     checkComp();
 }
 
@@ -83,17 +106,20 @@ function outComp(id) {
     level[id] = 1;
     current -= Number(points[id]);
     remaining++;
+    if (kraken[id] == "+1") {
+        ban = false;
+    }
     checkComp();
 }
 
 function checkComp() {
     for (i=0; i<weapons.length; i++) {
         if (level[i] == 1) {
-            if (points[i] > max - current - 2 * remaining || current == max) {
+            if (points[i] > max - current - 2 * remaining || current == max || (ban && kraken[i] == "+1")) {
                 level[i] = 2;
             }
         } else if (level[i] == 2) {
-            if (points[i] <= max - current - 2 * remaining) {
+            if (points[i] <= max - current - 2 * remaining && (!ban || kraken[i] != "+1")) {
                 level[i] = 1;
             }
         }
