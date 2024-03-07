@@ -26,17 +26,37 @@
     />
     <!-- MDB UI KIT -->
     <link rel="stylesheet" href="css/mdb.min.css" />
+
+    <link rel="stylesheet" href="css/style.css"/>
   </head>
 
   <body>    
       <!--Main layout-->
-      <main>
-        <div class="container">
+      <main style="background-color:#38761d">
+        <div class="container"><br>
           <!-- Table -->
+          <div clas="search">
+            <p class="numberChoose">Number of Players:</p>
+            <button onclick="showMenu()" class="menuButton" id="menuButton">4</button>
+            <div id="menu" class="menu">
+              <a href="#" id="2" onclick="changeMax(id)">2</a>
+              <a href="#" id="1" onclick="changeMax(id)">3</a>
+              <a href="#" id="0" onclick="changeMax(id)">4</a>
+            </div>
+          </div>
+          <p class="tableTitle">Team Comp</p>
           <table class="table">
-            <thead id="table-head"></thead>
+            <tbody id="comp"></tbody>
+          </table><br><br>
+          <p class="tableTitle">Available Weapons</p>
+          <table class="table">
+            <thead id="table-head" style="display: none;"></thead>
             <tbody id="table-body"></tbody>
-          </table>
+          </table><br><br>
+          <p class="tableTitle">Unavailable Weapons</p>
+          <table class="table">
+            <tbody id="full"></tbody>
+          </table><br><br>
           <!-- Table -->
         </div>
       </main>
