@@ -95,6 +95,7 @@ function toComp(id) {
     level[id] = 0;
     current += Number(points[id]);
     remaining--;
+    document.getElementById("pointCounter").innerHTML = "Points Remaining: " + (max - current);
     if (kraken[id] == "+1") {
         ban = true;
     }
@@ -106,6 +107,7 @@ function outComp(id) {
     level[id] = 1;
     current -= Number(points[id]);
     remaining++;
+    document.getElementById("pointCounter").innerHTML = "Points Remaining: " + (max - current);
     if (kraken[id] == "+1") {
         ban = false;
     }
