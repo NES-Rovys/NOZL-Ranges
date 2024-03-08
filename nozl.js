@@ -10,6 +10,7 @@ var current = 0;
 var remaining = 3;
 var background;
 var ban = false;
+var limit = false;
 function loadValues() {
     for (i=0; i<table.rows.length; i++) {
         weapons[i] = table.rows[i].cells[0].innerHTML;
@@ -117,11 +118,11 @@ function outComp(id) {
 function checkComp() {
     for (i=0; i<weapons.length; i++) {
         if (level[i] == 1) {
-            if (points[i] > max - current - 2 * remaining || current == max || (ban && kraken[i] == "+1")) {
+            if (points[i] > max - current - 2 * remaining || current == max || (ban && kraken[i] == "+1" && limit)) {
                 level[i] = 2;
             }
         } else if (level[i] == 2) {
-            if (points[i] <= max - current - 2 * remaining && (!ban || kraken[i] != "+1")) {
+            if (points[i] <= max - current - 2 * remaining && (!ban || kraken[i] != "+1" || !limit)) {
                 level[i] = 1;
             }
         }
@@ -155,5 +156,15 @@ function changeMax(id) {
             level[i] = 1;
         }
     }
+    document.getElementById("pointCounter").innerHTML = "Points Remaining: " + max;
     createTables();
+}
+
+function swapLimit() {
+    if (limit) {
+        limit = false;
+    } else {
+        limit = true;
+    }
+    checkComp();
 }
