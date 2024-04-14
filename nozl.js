@@ -5,6 +5,7 @@ var level = [];
 var kraken = [];
 var hidden = [];
 var maxPoints = [];
+var dupe = [];
 var max;
 var current = 0;
 var remaining = 3;
@@ -18,6 +19,7 @@ function loadValues() {
         level[i] = 1;
         kraken[i] = table.rows[i].cells[5].innerHTML;
         hidden[i] = false;
+        dupe[i] = 0;
     }
     maxPoints[0] = table.rows[1].cells[8].innerHTML;
     maxPoints[1] = table.rows[2].cells[8].innerHTML;
@@ -46,23 +48,25 @@ function createTables() {
     table = document.getElementById("comp");
     table.innerHTML = "<thead> <tr style='background-color:#34a853; font-size=20px'> <th></th> <th>Weapons</th> <th>Points</th> </tr> </thead> <tbody id='table-body'>";
     for (i=0; i<weapons.length; i++) {
-        if (level[i] == 0) {
-            if (check % 2 == 0) {
-                background = 1;
-            } else {
-                background = 2;
+        if (level[i] == 3 || level[i] == 4) {
+            for (j=0; j<dupe[i]; j++) {
+                if (check % 2 == 0) {
+                    background = 1;
+                } else {
+                    background = 2;
+                }
+                check++;
+                table.innerHTML += "<tr id='c" + i + "' class='tableText" + background + "' onclick='outComp(id)'> <td> <img src='img/" + (weapons[i].replace(".", "")).replace("'", "") + ".png' width='60px' height='60px'> </td> <td>" + weapons[i] + "</td> <td>" + points[i] + "</td> </tr>";
             }
-            check++;
-            table.innerHTML += "<tr id='c" + i + "' class='tableText" + background + "' onclick='outComp(id)'> <td> <img src='img/" + (weapons[i].replace(".", "")).replace("'", "") + ".png' width='60px' height='60px'> </td> <td>" + weapons[i] + "</td> <td>" + points[i] + "</td> </tr>"
         }
-        }
+    }
     table.innerHTML += "</tbody>";
     check = 0;
 
     table = document.getElementById("table-body")
     table.innerHTML = "<thead> <tr style='background-color:#34a853; font-size=20px'> <th></th> <th>Weapons</th> <th>Points</th> </tr> </thead> <tbody id='table-body'>";
     for (i=0; i<weapons.length; i++) {
-        if (level[i] == 1 && hidden[i] == false) {
+        if ((level[i] == 1 || level[i] == 3) && hidden[i] == false) {
             if (check % 2 == 0) {
                 background = 1;
             } else {
@@ -78,7 +82,7 @@ function createTables() {
     table = document.getElementById("full")
     table.innerHTML = "<thead> <tr style='background-color:color-mix(in srgb,#34a853, black 50%); font-size=20px'> <th></th> <th>Weapons</th> <th>Points</th> </tr> </thead> <tbody id='table-body'>";
     for (i=0; i<weapons.length; i++) {
-        if (level[i] == 2 && hidden[i] == false) {
+        if ((level[i] == 2 || level[i] == 4) && hidden[i] == false) {
             if (check % 2 == 0) {
                 background = 3;
             } else {
@@ -93,7 +97,8 @@ function createTables() {
 
 function toComp(id) {
     id = id.substring(1);
-    level[id] = 0;
+    level[id] = 3;
+    dupe[id]++;
     current += Number(points[id]);
     remaining--;
     document.getElementById("pointCounter").innerHTML = "Points Remaining: " + (max - current);
@@ -105,7 +110,10 @@ function toComp(id) {
 
 function outComp(id) {
     id = id.substring(1);
-    level[id] = 1;
+    dupe[id]--;
+    if (dupe[id] == 0) {
+        level[id] = 1;
+    }
     current -= Number(points[id]);
     remaining++;
     document.getElementById("pointCounter").innerHTML = "Points Remaining: " + (max - current);
@@ -117,13 +125,21 @@ function outComp(id) {
 
 function checkComp() {
     for (i=0; i<weapons.length; i++) {
-        if (level[i] == 1) {
+        if (level[i] == 1 || level[i] == 3) {
             if (points[i] > max - current - 2 * remaining || current == max || (ban && kraken[i] == "+1" && limit)) {
-                level[i] = 2;
+                if (level[i] == 3) {
+                    level[i] = 4;
+                } else {
+                    level[i] = 2;
+                }
             }
-        } else if (level[i] == 2) {
+        } else if (level[i] == 2 || level[i] == 4) {
             if (points[i] <= max - current - 2 * remaining && (!ban || kraken[i] != "+1" || !limit)) {
-                level[i] = 1;
+                if (level[i] == 4) {
+                    level[i] = 3;
+                } else {
+                    level[i] = 1;
+                }
             }
         }
     }
